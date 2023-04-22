@@ -25,6 +25,8 @@ Connection(username, password);
 
 
 const llm = new OpenAI({openAIApiKey: process.env.OPENAI_KEY });
+
+
 const vectorStore = youtubeTranscribe();
 
 

@@ -7,10 +7,6 @@ let key = process.env.OPENAI_KEY
 const configuration = new Configuration({
   apiKey: key,
 });
-
-
-
-
 async function youtubeTranscribe() {
   if (!fs.existsSync("transcript.txt")) {
 
@@ -18,9 +14,6 @@ async function youtubeTranscribe() {
 
     const openai = new OpenAIApi(configuration);
     try {
-      console.log("hello");
-
-
       const response = await openai.createTranscription(
         audioData, // The audio file to transcribe.
         "whisper-1", // The model to use for transcription.
@@ -44,14 +37,12 @@ async function youtubeTranscribe() {
           return createEmbeddings();
         }
       });
-
     }
     catch (error) {
       console.log(error);
     }
   }
   else {
-
     return createEmbeddings();
   }
 
