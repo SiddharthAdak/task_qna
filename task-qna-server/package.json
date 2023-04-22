@@ -1,0 +1,26 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "form-data": "^4.0.0",
+    "langchain": "^0.0.59",
+    "mongoose": "^7.0.4",
+    "node-wav": "^0.0.2",
+    "openai": "^3.2.1",
+    "ytdl": "^1.4.1",
+    "ytdl-core": "^4.11.4",
+    "@pinecone-database/pinecone": "^0.0.12"
+  }
+}
