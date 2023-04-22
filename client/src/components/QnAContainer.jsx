@@ -15,7 +15,7 @@ function QnAContainer() {
     const findAns = async() => {
         setIsLoading(true);
         try{
-            let response = await axios.post("https://task-qna-server.onrender.com/ques", {data: ques});
+            let response = await axios.post("http://localhost:8000/ques", {data: ques});
             
             if (response.status === 200) {
                 setIsLoading(false);

@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 app.use(cors({
-    origin: 'https://task-qna.onrender.com'
+    origin: 'http://localhost:5173'
 }));
 app.use(express.json({limit: '15mb', extended:true}));
 app.use(express.urlencoded({limit: '15mb', extended: true}));
