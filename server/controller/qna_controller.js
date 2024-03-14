@@ -1,22 +1,43 @@
-import { llm } from "../index.js";
+// import { llm } from "../index.js";
 import { loadQAStuffChain } from "langchain/chains";
 import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 import * as blobUtil from 'blob-util';
 import {RecursiveCharacterTextSplitter} from "langchain/text_splitter";
-import { FaissStore } from "langchain/vectorstores/faiss";
-import { HuggingFaceTransformersEmbeddings } from "langchain/embeddings/hf_transformers";
-import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { FaissStore } from "@langchain/community/vectorstores/faiss";
+// import { HuggingFaceTransformersEmbeddings } from "langchain/embeddings/hf_transformers";
+import { GoogleGenerativeAIEmbeddings } from "@langchain/google-genai";
+import { TaskType } from "@google/generative-ai";
+// import { OpenAIEmbeddings } from "langchain/embeddings/openai";
 import dotenv from "dotenv";
 import {nanoid} from "nanoid";
 import fs from "fs";
-
+import { HarmBlockThreshold, HarmCategory } from "@google/generative-ai";
+// import { OpenAI } from "langchain/llms/openai";
+import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 
 const directory = "vector_store/";
 dotenv.config();
-const embeddings = new OpenAIEmbeddings({
-    openAIApiKey: process.env.OPENAI_KEY, // In Node.js defaults to process.env.OPENAI_API_KEY
-    batchSize: 1000, // Default value if omitted is 512. Max is 2048
+const llm = new ChatGoogleGenerativeAI({
+    modelName: "gemini-pro",
+    apiKey: process.env.GOOGLE_API_KEY,
+    // maxOutputTokens: 2048,
+    safetySettings: [
+      {
+        category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+        threshold: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
+      },
+    ],
   });
+const embeddings = new GoogleGenerativeAIEmbeddings({
+    modelName: "embedding-001", // 768 dimensions
+    taskType: TaskType.RETRIEVAL_DOCUMENT,
+    title: "Document title",
+    apiKey: process.env.GOOGLE_API_KEY
+  });
+// const embeddings = new OpenAIEmbeddings({
+//     openAIApiKey: process.env.OPENAI_KEY, // In Node.js defaults to process.env.OPENAI_API_KEY
+//     batchSize: 1000, // Default value if omitted is 512. Max is 2048
+//   });
 export const findAns = async (req, res) => {
     
     const {ques, id} = req.body;
@@ -32,14 +53,22 @@ export const findAns = async (req, res) => {
           );
         const docs = await loadedVectorStore.similaritySearch(ques);
         console.log(docs.length);
-    
-        const chain = loadQAStuffChain(llm);
-        const result = await chain.call({
-            input_documents: docs,
-            question: ques,
+        
+        // const chain = loadQAStuffChain(llm);
+        let input_text = docs.map((e) => {
+            return e.pageContent
         });
-        console.log(result);
-        res.status(200).json(result);
+        input_text = input_text.join(" ");
+        console.log(input_text);
+        const prompt = " Based on the given context give answer to the following query (if the query is not related to the context give a generic answer): ";
+        const result = await llm.invoke([
+            [
+              "human",
+              "this is the context / document: " + input_text + prompt + ques,
+            ],
+          ]);
+        console.log(result.content);
+        res.status(200).json(result.content);
     }
     catch(error){
         res.status(400).json("some error ocurred");
@@ -68,9 +97,7 @@ export const processDoc = async(req, res) => {
     // console.log(chunks);
     console.log(chunks.length); 
 
-    // let embeddings = new HuggingFaceTransformersEmbeddings({
-    //     modelName: "Xenova/all-MiniLM-L6-v2",
-    // });
+    
     
     
     let id_array = [];

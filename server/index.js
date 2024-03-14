@@ -3,7 +3,6 @@ import dotenv from "dotenv"
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import Routes from "./routes/routes.js";
-import { OpenAI } from "langchain/llms/openai";
 
 dotenv.config();
 
@@ -11,14 +10,14 @@ const app = express();
 app.use(cookieParser());
 app.use(cors({
     credentials: true,
-    origin: "https://qna-site-mdf1.onrender.com",
+    origin: true,
 }));
 
 app.use(express.json({limit: '15mb', extended:true}));
 app.use(express.urlencoded({limit: '15mb', extended: true}));
 
 const PORT = process.env.PORT || 8000;
-const llm = new OpenAI({openAIApiKey: process.env.OPENAI_KEY });
+
 
 
 
@@ -31,4 +30,4 @@ app.listen(PORT, function(){
     
 })
 
-export {llm};
+// export {llm};

@@ -131,7 +131,8 @@ function QnAContainer() {
 
       if (response.status === 200) {
         setIsLoading(false);
-        setQuesAns([{ ques: ques, ans: response.data.text }, ...quesAns]);
+        console.log(response);
+        setQuesAns([{ ques: ques, ans: response.data }, ...quesAns]);
         setQues("");
         setError("");
       } else {
@@ -253,7 +254,11 @@ function QnAContainer() {
                   <div className="w-full bg-white p-6">
                     <div className="max-w-[800px] m-auto">
                       <p className="font-semibold">Answer:</p>
-                      <p>{e.ans}</p>
+                      {
+                        e.ans.split("\n").map((e, i) => {
+                          return (<p key = {i}>{e}</p>)
+                        })
+                      }
                     </div>
                   </div>
                 </div>
